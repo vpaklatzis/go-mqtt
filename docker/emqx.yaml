@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  emqx:
+    image: emqx:latest
+    ports:
+      - 1883:1883
+      - 8083:8083
+      - 8084:8084
+      - 8883:8883
+      - 18083:18083
+    networks:
+      - test-net
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx_ctl", "status"]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+
+networks:
+  test-net:
+    driver: bridge
+    external: false

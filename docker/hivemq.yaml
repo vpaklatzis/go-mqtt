@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  hivemq:
+    image: hivemq/hivemq4
+    ports:
+      - "1883:1883"
+    networks:
+      - test-net
+
+networks:
+  test-net:
+    driver: bridge
+    external: false

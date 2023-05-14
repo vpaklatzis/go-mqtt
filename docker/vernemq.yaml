@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  vernemq:
+    image: vernemq/vernemq:latest
+    environment:
+      - DOCKER_VERNEMQ_ACCEPT_EULA=yes
+      - DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on
+    ports:
+      - "1883:1883"
+    networks:
+      - test-net
+
+networks:
+  test-net:
+    driver: bridge
+    external: false

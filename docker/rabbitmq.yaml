@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    command: "/bin/bash -c \"rabbitmq-plugins enable --offline rabbitmq_mqtt rabbitmq_web_mqtt rabbitmq_amqp1_0; rabbitmq-server\""
+    ports:
+      - "1883:1883"
+    volumes:
+      - type: bind
+        source: ./binds/mosquitto/config
+        target: /etc/rabbitmq/rabbitmq.conf
+        read_only: true
+    networks:
+      - test-net
+
+networks:
+  test-net:
+    driver: bridge
+    external: false

@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    networks:
+      - test-net
+    ports:
+      - target: 1883
+        published: 1883
+        protocol: tcp
+        mode: host
+    volumes:
+      - type: bind
+        source: ./binds/mosquitto/config
+        target: /mosquitto/config
+        read_only: true
+      - type: bind
+        source: ./binds/mosquitto/data
+        target: /mosquitto/data
+      - type: bind
+        source: ./binds/mosquitto/log
+        target: /mosquitto/log
+
+networks:
+  test-net:
+    driver: bridge
+    external: false
