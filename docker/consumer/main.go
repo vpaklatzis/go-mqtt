@@ -101,7 +101,7 @@ func main() {
 			if t.Error() != nil {
 				fmt.Printf("Error subscribing: %s\n", t.Error())
 			} else {
-				fmt.Println("Subscribed to: ", TOPIC)
+				fmt.Println("Subscribed to:", TOPIC)
 			}
 		}()
 	}
