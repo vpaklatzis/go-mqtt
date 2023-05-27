@@ -1,0 +1,11 @@
+# Give admin full access to everything
+user admin
+topic readwrite #
+
+# Allow floridis read/write to topic floridis/sensor/temp 
+user floridis
+topic floridis/#
+
+# Allow mimikos read/write to topic mimikos/sensor/temp
+user mimikos
+topic mimikos/#

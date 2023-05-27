@@ -16,15 +16,19 @@
 
 * `build-linux.sh` file: Compiles the go projects present in the root directory to linux binaries.
 
-* `emqx.yaml` file: docker-compose file, contains the necessary configuration to run the EMQX docker image inside a docker container.
+* `docker-compose` folder: Contains all the docker-compose files.
 
-* `hivemq.yaml` file: docker-compose file, contains the necessary configuration to run the HiveMQ docker image inside a docker container.
+    * `emqx.yaml` file: docker-compose file, contains the necessary configuration to run the EMQX docker image inside a docker container.
 
-* `mosquitto.yaml` file: docker-compose file, contains the necessary configuration to run the Mosquitto docker image inside a docker container.
+    * `hivemq.yaml` file: docker-compose file, contains the necessary configuration to run the HiveMQ docker image inside a docker container.
 
-* `rabbitmq.yaml` file: docker-compose file, contains the necessary configuration to run the RabbitMQ docker image inside a docker container.
+    * `mosquitto.yaml` file: docker-compose file, contains the necessary configuration to run the Mosquitto docker image inside a docker container.
 
-* `vernemq.yaml` file: docker-compose file, contains the necessary configuration to run the VerneMQ docker image inside a docker container.
+    * `rabbitmq.yaml` file: docker-compose file, contains the necessary configuration to run the RabbitMQ docker image inside a docker container.
+
+    * `vernemq.yaml` file: docker-compose file, contains the necessary configuration to run the VerneMQ docker image inside a docker container.
+
+    * `services.yaml` file: docker-compose file, contains the necessary configuration to run the producer and consumer images inside docker containers.
 
 The brokers by default accept mqtt connections and messages to the port 1883 via tcp.
 

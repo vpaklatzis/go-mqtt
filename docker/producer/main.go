@@ -1,8 +1,8 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
-	"fmt"
 	"log"
 	"math/rand"
 	"os"
@@ -12,34 +12,44 @@ import (
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/google/uuid"
 )
 
 const (
-	TOPIC                 = "topic/temps"
+	TOPIC                 = "floridis/sensor/temp"
 	QOS                   = 1
 	SERVER_ADDRESS_BROKER = "tcp://localhost:1883"
 	DELAY                 = 1 * time.Second
-	CLIENT_ID             = "mqtt_producer"
+	INITIAL_CLIENT_ID     = "mqtt_producer"
 	WRITETOLOG            = true
+	USERNAME              = "floridis"
+	PASSWORD              = "password"
 )
 
 func main() {
+	mqtt.ERROR = log.New(os.Stdout, "[ERROR] ", 0)
+	mqtt.CRITICAL = log.New(os.Stdout, "[CRITICAL] ", 0)
+	mqtt.WARN = log.New(os.Stdout, "[WARN]  ", 0)
+	// mqtt.DEBUG = log.New(os.Stdout, "[DEBUG] ", 0)
 	opts := mqtt.NewClientOptions()
 
-	// Add mosquitto broker address
-	//opts.AddBroker(SERVER_ADDRESS_MOSQ)
-	// Add hive broker address
 	opts.AddBroker(SERVER_ADDRESS_BROKER)
-	// Add emqx broker address
-	//opts.AddBroker(SERVER_ADDRESS_EMQX)
-	opts.SetClientID(CLIENT_ID)
 
-	opts.SetOrderMatters(true)            // Allow out of order messages
+	uuid := uuid.New()
+	clientId := INITIAL_CLIENT_ID + "_" + uuid.String()
+
+	opts.SetClientID(clientId)
+	opts.SetOrderMatters(true) // Allow out of order messages if set to false
+	opts.SetUsername(USERNAME)
+	opts.SetPassword(PASSWORD)
 	opts.ConnectTimeout = 1 * time.Second // Minimal delays on connect
 	opts.WriteTimeout = 1 * time.Second   // Minimal delays on writes
 	opts.KeepAlive = 10                   // Keepalive every 10 seconds
 	opts.PingTimeout = 1 * time.Second    // local broker so response should be quick
 
+	tlsConfig := &tls.Config{InsecureSkipVerify: true, ClientAuth: tls.NoClientCert}
+
+	opts.SetTLSConfig(tlsConfig)
 	// keep trying to connect and will reconnect if network drops
 	opts.SetAutoReconnect(true)
 	opts.SetConnectRetry(true)
@@ -49,10 +59,10 @@ func main() {
 		log.Println("Connected.")
 	}
 	opts.OnConnectionLost = func(client mqtt.Client, err error) {
-		fmt.Printf("Connection lost: %v.", err)
+		log.Printf("Connection lost: %v.", err)
 	}
 	opts.OnReconnecting = func(mqtt.Client, *mqtt.ClientOptions) {
-		fmt.Println("Attempting to reconnect...")
+		log.Println("Attempting to reconnect...")
 	}
 	// Create the client using the options above
 	client := mqtt.NewClient(opts)
@@ -62,19 +72,21 @@ func main() {
 		panic(token.Error())
 	}
 
-	fmt.Println("Connection is up.")
+	log.Println("Connection is up.")
 
 	// Publish messages until a signal is received
-	publish(client)
+	publish(client, clientId)
 }
 
-func publish(client mqtt.Client) {
+func publish(client mqtt.Client, clientId string) {
 	done := make(chan struct{})
 	var wg sync.WaitGroup
 
 	type msg struct {
-		Count uint64
-		Temp  float64
+		Count    uint64
+		Temp     float64
+		Date     time.Time
+		ClientId string
 	}
 
 	wg.Add(1)
@@ -88,25 +100,27 @@ func publish(client mqtt.Client) {
 				temp = rand.Float64() + 3
 				msg, err := json.Marshal(
 					msg{
-						Count: count,
-						Temp:  temp,
+						Count:    count,
+						Temp:     temp,
+						Date:     time.Now(),
+						ClientId: clientId,
 					})
 				if err != nil {
 					panic(err)
 				}
 				if WRITETOLOG {
-					fmt.Printf("Sending message: %s\n", msg)
+					log.Printf("Sending message: %s\n", msg)
 				}
 				t := client.Publish(TOPIC, QOS, false, msg)
 				// Handle the token in a go routine so this loop keeps sending messages regardless of delivery status
 				go func() {
 					<-t.Done()
 					if t.Error() != nil {
-						fmt.Printf("Error publishing: %s\n", t.Error())
+						log.Printf("Error publishing: %s\n", t.Error())
 					}
 				}()
 			case <-done:
-				fmt.Println("Producer done.")
+				log.Println("Producer done.")
 				wg.Done()
 				return
 			}
@@ -118,9 +132,9 @@ func publish(client mqtt.Client) {
 	signal.Notify(sig, syscall.SIGTERM)
 
 	<-sig
-	fmt.Println("signal caught - exiting")
+	log.Println("signal caught - exiting")
 
 	close(done)
 	wg.Wait()
-	fmt.Println("Shutdown complete.")
+	log.Println("Shutdown complete.")
 }

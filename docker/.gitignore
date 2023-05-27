@@ -1,0 +1,3 @@
+/binds/mosquitto/data
+/binds/mosquitto/log
+/docker-compose/data

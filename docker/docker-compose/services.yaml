@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  pub:
+    build: publisher/.
+    networks:
+      - test-net
+
+  sub:
+    build: subscriber/.
+    networks:
+      - test-net
+
+networks:
+  test-net:
+    driver: bridge
+    external: false

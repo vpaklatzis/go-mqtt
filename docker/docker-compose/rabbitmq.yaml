@@ -8,7 +8,7 @@ services:
       - "1883:1883"
     volumes:
       - type: bind
-        source: ./binds/mosquitto/config
+        source: ../binds/mosquitto/config
         target: /etc/rabbitmq/rabbitmq.conf
         read_only: true
     networks:

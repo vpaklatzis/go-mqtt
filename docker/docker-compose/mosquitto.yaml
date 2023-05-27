@@ -12,17 +12,20 @@ services:
         mode: host
     volumes:
       - type: bind
-        source: ./binds/mosquitto/config
+        source: ../binds/mosquitto/config
         target: /mosquitto/config
-        read_only: true
       - type: bind
-        source: ./binds/mosquitto/data
+        source: data
         target: /mosquitto/data
       - type: bind
-        source: ./binds/mosquitto/log
+        source: ../binds/mosquitto/log
         target: /mosquitto/log
 
 networks:
   test-net:
     driver: bridge
     external: false
+
+volumes:
+  data:
+    name: "mqtt-broker-data"
