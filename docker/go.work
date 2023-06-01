@@ -1,6 +1,8 @@
 go 1.18
 
 use (
-	./consumer
-	./producer
+	./subscriber
+	./publisher
+	./api
+	./ble
 )
