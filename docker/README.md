@@ -16,9 +16,9 @@
 
 * `k6` folder: Holds the api performance testing files written in javascript.
 
-* `subscriber` project: The mqtt subscriber is developed in go and connects to the mqtt broker host running on localhost and port 1883, via tcp. It accepts and prints to the terminal mqtt the messages that are being published and passed through the broker via the topic/temps of the broker.
+* `subscriber` project: The mqtt subscriber is developed in go and connects to the mqtt broker host running on localhost and port 1883, via tcp. It accepts and prints to the terminal mqtt the messages that are being published and passed through the broker via the topic/temps of the broker. MQTT version used is 3.1.1.
 
-* `publisher` project: The mqtt publisher is developed in go and connects to the mqtt broker host running on localhost and port 1883, via tcp. It publishes mqtt messages, prints them to the terminal and sends them directly to the /sensor/temp topic of the broker. A delay of 1 second is set, to limit the rate of messages being published.
+* `publisher` project: The mqtt publisher is developed in go and connects to the mqtt broker host running on localhost and port 1883, via tcp. It publishes mqtt messages, prints them to the terminal and sends them directly to the /sensor/temp topic of the broker. A delay of 1 second is set, to limit the rate of messages being published. MQTT version used is 3.1.1.
 
 * `build-linux.sh` file: Compiles the go projects present in the root directory to linux binaries.
 
